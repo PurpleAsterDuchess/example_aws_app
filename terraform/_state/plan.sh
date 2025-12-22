@@ -1,0 +1,1 @@
+terraform plan -var-file="$(dirname $0)/dev.tfvars" -out TerraformPlan

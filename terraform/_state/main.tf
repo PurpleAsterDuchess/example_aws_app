@@ -18,4 +18,9 @@ resource "aws_s3_bucket" "state_bucket" {
     tags = {
         Name = "Terraform state bucket"
     }
+
+    lifecycle {
+      prevent_destroy = true
+    }
 }
+

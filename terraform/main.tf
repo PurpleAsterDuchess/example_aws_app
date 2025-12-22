@@ -12,17 +12,17 @@ terraform {
     region         = "us-east-1"
     encrypt        = true
     }
+}
 
-    provider "aws" {
-        region = var.region
-        profile = var.profile
-    }
+provider "aws" {
+    region = var.aws_region
+    profile = var.profile
+}
 
-    locals {
-        tags = {
-            project = var.project
-            environment = var.environment
-            deployment = "terraform"
-        }
+locals {
+    tags = {
+        project = var.project
+        environment = var.environment
+        deployment = "terraform"
     }
 }

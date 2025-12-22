@@ -7,10 +7,6 @@ terraform {
     }
 
     backend "s3" {
-    bucket         = "demo_bucket"
-    key            = "example_aws_app/terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
     }
 }
 

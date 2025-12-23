@@ -1,2 +1,2 @@
 #!/bin/bash
-terraform plan -var-file="$(dirname $0)/dev.tfvars" -out "$(dirname $0)/terraformPlan"
+terraform plan -var-file="dev.tfvars" -out "terraformPlan"

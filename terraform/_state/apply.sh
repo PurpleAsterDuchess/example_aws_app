@@ -1,1 +1,2 @@
-terraform apply TerraformPlan
+#!/bin/bash
+terraform apply terraformPlan

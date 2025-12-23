@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "aws" {
-    region = "us-east-1"
+    region = var.aws_region
     profile = var.profile
 }
 
@@ -23,4 +23,3 @@ resource "aws_s3_bucket" "state_bucket" {
       prevent_destroy = true
     }
 }
-

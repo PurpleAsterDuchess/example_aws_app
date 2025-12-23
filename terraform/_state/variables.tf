@@ -9,3 +9,8 @@ variable "state_bucket_name" {
     default = "pp-demo-terraform-state"  
 
 }
+
+variable "aws_region" {
+    description = "AWS Region"
+    type = string
+}

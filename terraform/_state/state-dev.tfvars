@@ -1,4 +1,4 @@
-state_bucket_name = "unicorn-terraform-state"
-profile = "default"
+state_bucket_name="demo-terraform-state"
+profile="default"
 
-aws_region = "us-east-1"
+aws_region="us-east-1"

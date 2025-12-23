@@ -24,3 +24,13 @@ variable "cognito_user_pool_name" {
     description = "Name of user pool in cognito"
     type = string
 }
+
+variable "state_bucket_name" {
+    description = "Name of the S3 bucket for Terraform state"
+    type = string
+}
+
+variable "aws_database" {
+    description = "Name of the RDS database"
+    type = string
+}

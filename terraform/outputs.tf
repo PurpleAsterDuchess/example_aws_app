@@ -9,7 +9,7 @@ output "lambda_bucket_name" {
 output "function_name" {
   description = "Deployed Lambda function name."
 
-  value = aws_lambda_function.hello_world.function_name
+  value = aws_lambda_function.health_check.function_name
 }
 
 output "base_url" {

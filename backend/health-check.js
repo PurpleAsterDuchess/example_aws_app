@@ -1,9 +1,9 @@
 module.exports.handler = async (event) => {
   console.log("Event: ", event);
-  let responseMessage = "Hello";
+  let responseMessage = "Success! The health check passed.";
   
   if (event.queryStringParameters && event.queryStringParameters["Name"]) {
-    responseMessage = "Hello, " + event.queryStringParameters["Name"] + "!";
+    responseMessage = "Success! The health check passed, " + event.queryStringParameters["Name"] + "!";
   }
 
   return {

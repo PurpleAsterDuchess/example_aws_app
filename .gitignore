@@ -425,3 +425,4 @@ FodyWeavers.xsd
 terraformPlan
 *.tfstate
 destroy.plan
+*.zip

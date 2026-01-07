@@ -1,3 +1,49 @@
+data "aws_availability_zones" "available" {}
+
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "5.1.2"
+
+  name                 = "demo_rds"
+  cidr                 = "10.0.0.0/16"
+  azs                  = data.aws_availability_zones.available.names
+  public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+}
+
+resource "aws_db_subnet_group" "demo_rds" {
+  name       = "demo_db_subnet_group"
+  subnet_ids = module.vpc.public_subnets
+
+  tags = {
+    Name = "demo_db_subnet_group"
+  }
+}
+
+resource "aws_security_group" "rds" {
+  name   = "demo_rds"
+  vpc_id = module.vpc.vpc_id
+
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "demo_rds"
+  }
+}
+
 resource "aws_db_instance" "demo_db_instance" {
     allocated_storage    = 5
     db_name              = var.aws_database
@@ -7,23 +53,17 @@ resource "aws_db_instance" "demo_db_instance" {
     username             = "demo_admin"
     password             = "admin123"
     parameter_group_name = "default.postgres17"
+    db_subnet_group_name = aws_db_subnet_group.demo_rds.name
+    vpc_security_group_ids = [aws_security_group.rds.id]
     skip_final_snapshot  = true
 }
 
-output "rds_hostname" {
-  description = "RDS instance hostname"
-  value       = aws_db_instance.demo_db_instance.address
-  sensitive   = true
-}
+resource "aws_db_parameter_group" "demo" {
+  name   = "demo"
+  family = "postgres14"
 
-output "rds_port" {
-  description = "RDS instance port"
-  value       = aws_db_instance.demo_db_instance.port
-  sensitive   = true
-}
-
-output "rds_username" {
-  description = "RDS instance root username"
-  value       = aws_db_instance.demo_db_instance.username
-  sensitive   = true
+  parameter {
+    name  = "log_connections"
+    value = "1"
+  }
 }

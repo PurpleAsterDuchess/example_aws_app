@@ -60,6 +60,22 @@ resource "aws_apigatewayv2_route" "post_function" {
   target    = "integrations/${aws_apigatewayv2_integration.post_function.id}"
 }
 
+# Get endpoint
+resource "aws_apigatewayv2_integration" "get_function" {
+  api_id = aws_apigatewayv2_api.lambda.id
+
+  integration_uri    = aws_lambda_function.get_function.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "get_function" {
+  api_id = aws_apigatewayv2_api.lambda.id
+
+  route_key = "GET /get"
+  target    = "integrations/${aws_apigatewayv2_integration.get_function.id}"
+}
+
 # Cloudwatch
 resource "aws_cloudwatch_log_group" "api_gw" {
   name = "/aws/api_gw/${aws_apigatewayv2_api.lambda.name}"
@@ -80,6 +96,15 @@ resource "aws_lambda_permission" "api_gw_post_function" {
   statement_id  = "AllowExecutionFromAPIGatewayPostFunction"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.post_function.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_apigatewayv2_api.lambda.execution_arn}/*/*"
+}
+
+resource "aws_lambda_permission" "api_gw_get_function" {
+  statement_id  = "AllowExecutionFromAPIGatewayGetFunction"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.get_function.function_name
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_apigatewayv2_api.lambda.execution_arn}/*/*"

@@ -1,6 +1,13 @@
 resource "aws_apigatewayv2_api" "lambda" {
   name          = "serverless_lambda_gw"
   protocol_type = "HTTP"
+
+  cors_configuration {
+    allow_origins = ["*"]
+    allow_methods = ["GET", "POST", "OPTIONS"]
+    allow_headers = ["content-type", "authorization"]
+    max_age       = 300
+  }
 }
 
 resource "aws_apigatewayv2_stage" "lambda" {
@@ -58,6 +65,13 @@ resource "aws_apigatewayv2_route" "post_function" {
 
   route_key = "POST /post"
   target    = "integrations/${aws_apigatewayv2_integration.post_function.id}"
+
+  # cors_configuration {
+  #     allow_origins = ["https://www.mywebsite.fr"]
+  #     allow_methods = ["POST", "GET", "OPTIONS"]
+  #     allow_headers = ["content-type"]
+  #     max_age       = 300
+  #   }
 }
 
 # Get endpoint
@@ -74,6 +88,12 @@ resource "aws_apigatewayv2_route" "get_function" {
 
   route_key = "GET /get"
   target    = "integrations/${aws_apigatewayv2_integration.get_function.id}"
+  # cors_configuration {
+  #   allow_origins = ["https://www.mywebsite.fr"]
+  #   allow_methods = ["POST", "GET", "OPTIONS"]
+  #   allow_headers = ["content-type"]
+  #   max_age       = 300
+  # }
 }
 
 # Cloudwatch

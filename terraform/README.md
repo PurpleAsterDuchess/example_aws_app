@@ -10,7 +10,8 @@
 # Database requests
 1. get api-url
 `terraform output base_url`
-2. run the CRUD request
+2. run the CRUD request 
+*(currently only post and get for proof of concept)*
 ## Post request
 `curl -X POST "$(terraform output -raw base_url)/post" -d '{"name":"Alice"}' -H "Content-Type: application/json"`
 ## Get request

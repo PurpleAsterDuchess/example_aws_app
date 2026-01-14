@@ -25,13 +25,22 @@ module.exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ posts: result.rows }),
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,POST",
+        "Access-Control-Allow-Headers": "Content-Type"
+      },
+      body: JSON.stringify({ values: result.rows }),
     };
   } catch (err) {
     console.error("Query error", err);
     return {
       statusCode: 500,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      },
       body: JSON.stringify({ message: "DB error" }),
     };
   }

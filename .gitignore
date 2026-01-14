@@ -426,3 +426,5 @@ terraformPlan
 *.tfstate
 destroy.plan
 *.zip
+
+*.env.local

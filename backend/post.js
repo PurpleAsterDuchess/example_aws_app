@@ -33,10 +33,17 @@ module.exports.handler = async (event) => {
 
     const body = event.body ? JSON.parse(event.body) : {};
     const name = body.name || (event.queryStringParameters || {}).Name;
+    console.log("Received name:", name);
 
     if (!name) {
       return {
         statusCode: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET,POST",
+          "Access-Control-Allow-Headers": "Content-Type"
+        },
         body: JSON.stringify({ message: "name is required" }),
       };
     }
@@ -47,11 +54,25 @@ module.exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,POST",
+        "Access-Control-Allow-Headers": "Content-Type"
+      },
       body: JSON.stringify({ message: `Stored '${name}'` }),
     };
   } catch (err) {
     console.error("Insert error", err);
-    return { statusCode: 500, body: JSON.stringify({ message: "DB error" }) };
+    return {
+      statusCode: 500,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,POST",
+        "Access-Control-Allow-Headers": "Content-Type"
+      },
+      body: JSON.stringify({ message: "DB error" })
+    };
   }
 };

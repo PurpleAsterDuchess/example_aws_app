@@ -1,18 +1,26 @@
 const { Pool } = require("pg");
 
-const pool = new Pool({
-  host: process.env.PGHOST,
-  port: Number(process.env.PGPORT || 5432),
-  user: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-  database: process.env.PGDATABASE,
-  ssl: { rejectUnauthorized: false },
-});
-
+let pool = null;
 let initialized = false;
+
+function getPool() {
+  if (!pool) {
+    pool = new Pool({
+      host: process.env.PGHOST,
+      port: Number(process.env.PGPORT || 5432),
+      user: process.env.PGUSER,
+      password: process.env.PGPASSWORD,
+      database: process.env.PGDATABASE,
+      ssl: { rejectUnauthorized: false },
+    });
+  }
+  return pool;
+}
+
 async function ensureSchema() {
   if (initialized) return;
   try {
+    const pool = getPool();
     await pool.query(`
       CREATE TABLE IF NOT EXISTS posts (
         id serial PRIMARY KEY,
@@ -42,12 +50,13 @@ module.exports.handler = async (event) => {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "GET,POST",
-          "Access-Control-Allow-Headers": "Content-Type"
+          "Access-Control-Allow-Headers": "Content-Type",
         },
         body: JSON.stringify({ message: "name is required" }),
       };
     }
 
+    const pool = getPool();
     await pool.query("INSERT INTO posts(name, created_at) VALUES($1, NOW())", [
       name,
     ]);
@@ -58,7 +67,7 @@ module.exports.handler = async (event) => {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,POST",
-        "Access-Control-Allow-Headers": "Content-Type"
+        "Access-Control-Allow-Headers": "Content-Type",
       },
       body: JSON.stringify({ message: `Stored '${name}'` }),
     };
@@ -70,9 +79,9 @@ module.exports.handler = async (event) => {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,POST",
-        "Access-Control-Allow-Headers": "Content-Type"
+        "Access-Control-Allow-Headers": "Content-Type",
       },
-      body: JSON.stringify({ message: "DB error" })
+      body: JSON.stringify({ message: "DB error" }),
     };
   }
 };

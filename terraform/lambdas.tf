@@ -27,6 +27,18 @@ data "archive_file" "lambda_health_check" {
 
   source_dir  = "../backend"
   output_path = "../backend.zip"
+  
+  depends_on = [null_resource.install_dependencies]
+}
+
+resource "null_resource" "install_dependencies" {
+  provisioner "local-exec" {
+    command = "cd ../backend && npm install"
+  }
+  
+  triggers = {
+    package_json = filemd5("../backend/package.json")
+  }
 }
 
 resource "aws_s3_object" "lambda_health_check" {
@@ -44,6 +56,8 @@ resource "aws_lambda_function" "health_check" {
 
   s3_bucket = aws_s3_bucket.lambda_bucket.id
   s3_key    = aws_s3_object.lambda_health_check.key
+
+  depends_on = [aws_s3_object.lambda_health_check]
 
   runtime = "nodejs20.x"
   handler = "health-check.handler"
@@ -81,6 +95,8 @@ resource "aws_lambda_function" "post_function" {
 
   s3_bucket = aws_s3_bucket.lambda_bucket.id
   s3_key    = aws_s3_object.lambda_health_check.key
+
+  depends_on = [aws_s3_object.lambda_health_check]
 
   environment {
     variables = {

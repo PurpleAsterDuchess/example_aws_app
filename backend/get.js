@@ -1,13 +1,20 @@
 const { Pool } = require("pg");
 
-const pool = new Pool({
-  host: process.env.PGHOST,
-  port: Number(process.env.PGPORT || 5432),
-  user: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-  database: process.env.PGDATABASE,
-  ssl: { rejectUnauthorized: false },
-});
+let pool = null;
+
+function getPool() {
+  if (!pool) {
+    pool = new Pool({
+      host: process.env.PGHOST,
+      port: Number(process.env.PGPORT || 5432),
+      user: process.env.PGUSER,
+      password: process.env.PGPASSWORD,
+      database: process.env.PGDATABASE,
+      ssl: { rejectUnauthorized: false },
+    });
+  }
+  return pool;
+}
 
 module.exports.handler = async (event) => {
   try {
@@ -21,6 +28,7 @@ module.exports.handler = async (event) => {
       params = [name];
     }
 
+    const pool = getPool();
     const result = await pool.query(query, params);
 
     return {
@@ -29,7 +37,7 @@ module.exports.handler = async (event) => {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,POST",
-        "Access-Control-Allow-Headers": "Content-Type"
+        "Access-Control-Allow-Headers": "Content-Type",
       },
       body: JSON.stringify({ values: result.rows }),
     };
@@ -39,7 +47,7 @@ module.exports.handler = async (event) => {
       statusCode: 500,
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify({ message: "DB error" }),
     };
